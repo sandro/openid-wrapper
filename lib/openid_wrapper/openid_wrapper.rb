@@ -8,6 +8,17 @@ module OpenidWrapper
     base.send :helper_method, :openid_params
   end
 
+  class InvalidOpenId < StandardError; end
+
+  def self.normalize_url(url)
+    uri = URI.parse(url.to_s.strip)
+    uri = URI.parse("http://#{uri}") unless uri.scheme
+    uri.scheme = uri.scheme.downcase  # URI should do this
+    uri.normalize.to_s
+    rescue URI::InvalidURIError
+      raise InvalidOpenId.new("#{url} is not an OpenID URL")
+  end
+
 protected
   def begin_openid(options = {}, &check_user)
     options.assert_valid_keys(
