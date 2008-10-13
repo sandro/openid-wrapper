@@ -39,7 +39,7 @@ protected
     identifier = options[:openid_identifier]  || params[:openid_identifier] || ''
     return_url = options[:return_url]         || complete_session_url
     error_redirect = options[:error_redirect] || '/'
-    realm      = options[:realm]              || current_realm
+    realm      = options[:realm]              || root_url
     immediate  = options[:immediate_mode]     || params[:immediate_mode] || false
     
     begin
@@ -140,7 +140,7 @@ private
   # For Wrapper DEVS:
   # current_realm will be checked against openid.return_to value. Read more from method complete_openid.
   def current_realm
-    root_url
+    request.protocol + request.host_with_port + request.relative_url_root + request.path
   end
 
   def add_to_params(args)
