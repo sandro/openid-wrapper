@@ -46,7 +46,7 @@ protected
       @openid_request = consumer.begin(identifier.strip)
     rescue OpenID::OpenIDError => e
       flash[:error] = "Discovery failed for #{identifier}: #{e}"
-      return redirect_back_or(error_redirect)
+      return redirect_back_or_default(error_redirect)
     end
     
     required = options[:required] || params[:required]
