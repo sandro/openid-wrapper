@@ -37,7 +37,7 @@ protected
  
     # trying to be as flexible as possible
     identifier = options[:openid_identifier]  || params[:openid_identifier] || ''
-    return_url = options[:return_url]         || complete_sessions_url
+    return_url = options[:return_url]         || complete_session_url
     error_redirect = options[:error_redirect] || '/'
     realm      = options[:realm]              || current_realm
     immediate  = options[:immediate_mode]     || params[:immediate_mode] || false
