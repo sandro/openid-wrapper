@@ -4,9 +4,6 @@
 
 Thin OpenID Consumer Wrapper for Ruby on Rails using ruby-openid gem.
 
-== Forked
-
-Handle openid completion the same way that the Rails open_id_authentication does it.
 
 == SHORT STORY
 
@@ -51,7 +48,7 @@ Add to config/routes.rb:
 
   # unfortunatly OpenID spec does not honor RESTful design,
   # so we need complete action as well.
-  map.resource :session, :collection => {:complete => :get}
+  map.resources :sessions, :collection => {:complete => :get}
 
   # some handy shortcuts, you can use as link_to 'Signup', signup_path
   map.signup '/signup', :controller => 'users', :action => 'new'
@@ -64,19 +61,12 @@ Add to app/controller/sessions_controller.rb # Look how slim and clean controlle
   end
 
   def complete
-    complete_openid do |result, identity_url, registration|
-      if result.successful?
-        @user = User.find_by_identity_url(identity_url)
-        successful_login_for(@user)
-      else
-        failed_login(result.message || "Sorry, open id authentication failed.")
-      end
-    end
+    complete_openid
   end
 
 Add to app/views/users/new.html.haml:
 
-  - form_tag session_path do
+  - form_tag sessions_path do
     = text_field_tag :openid_identifier
     = submit_tag 'Login'
 
@@ -88,6 +78,23 @@ add OpenID official selector from https://www.idselector.com/
 
 * OpenID Wrapper will generate log entry:
   ** openid_wrapper: initialized properly.
+
+
+== How to contribute?
+
+You are welcome to clone it at your favourite git repository:
+
+  main repository: 
+    http://gitorious.org/projects/openid-wrapper
+
+  secondary repositories:
+    http://rubyforge.org/projects/openid-wrapper/ 
+    http://github.com/priit/openid-wrapper/
+
+Check out TODO file to find out some pending tasks or do whatever you
+like to improve. Just send merge request, when you like to push
+your improvements. 
+
 
 == General Info about OpenID
 
@@ -102,8 +109,8 @@ http://openid.net/specs/openid-authentication-2_0.html
  * Alex Gorbatchev made complete clean up without changing original API.[3]
  * Priit Tamboom made complete API change as well and gemified it.[4]
 
-1. Priit Tamboom
-2. http://svn.rubyonrails.org/rails/plugins/open_id_authentication/
-3. http://code.google.com/p/open-id-authentication/
-4. http://gitorious.org/projects/openid-wrapper/ 
+1. http://svn.rubyonrails.org/rails/plugins/open_id_authentication/
+2. http://code.google.com/p/open-id-authentication/
+3. http://gitorious.org/projects/openid-wrapper/ 
 
+Copyright (c) 2008 Priit Tamboom, released under the MIT license
