@@ -86,7 +86,18 @@ protected
     # Add openid params to params[:openid]
     params[:openid] = openid_params
 
-    return @openid_response
+    identity_url     = normalize_url(@openid_response.display_identifier) if @openid_response.display_identifier
+
+    case @openid_response.status
+    when OpenID::Consumer::SUCCESS
+      yield Result[:successful], identity_url, openid_params 
+    when OpenID::Consumer::CANCEL
+      yield Result[:canceled], identity_url, nil
+    when OpenID::Consumer::FAILURE
+      yield Result[:failed], identity_url, nil
+    when OpenID::Consumer::SETUP_NEEDED
+      yield Result[:setup_needed], @openid_response.setup_url, nil
+    end
   end
   
   # For wrapper USERS:
@@ -149,6 +160,42 @@ private
     
     args.each do |key,value|
       @openid_request.return_to_args[key.to_s] = value.to_s
+    end
+  end
+
+  class Result
+    ERROR_MESSAGES = {
+      :missing      => "Sorry, the OpenID server couldn't be found",
+      :invalid      => "Sorry, but this does not appear to be a valid OpenID",
+      :canceled     => "OpenID verification was canceled",
+      :failed       => "OpenID verification failed",
+      :setup_needed => "OpenID verification needs setup"
+    }
+
+    def self.[](code)
+      new(code)
+    end
+
+    def initialize(code)
+      @code = code
+    end
+
+    def status
+      @code
+    end
+
+    ERROR_MESSAGES.keys.each { |state| define_method("#{state}?") { @code == state } }
+
+    def successful?
+      @code == :successful
+    end
+
+    def unsuccessful?
+      ERROR_MESSAGES.keys.include?(@code)
+    end
+
+    def message
+      ERROR_MESSAGES[@code]
     end
   end
 end
