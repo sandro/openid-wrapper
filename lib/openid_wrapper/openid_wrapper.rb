@@ -59,7 +59,7 @@ protected
       yield normalized_identifier
     end
 
-    add_to_params(options[:params])
+    add_to_params(options[:openid_params])
     add_to_params(:redirect_to => params[:redirect_to]) unless params[:redirect_to].nil?
 
     redirect_to @openid_request.redirect_url(realm, return_url, immediate)
@@ -90,7 +90,7 @@ protected
 
     case @openid_response.status
     when OpenID::Consumer::SUCCESS
-      yield Result[:successful], identity_url, openid_params 
+      yield Result[:successful], identity_url, params[:openid]
     when OpenID::Consumer::CANCEL
       yield Result[:canceled], identity_url, nil
     when OpenID::Consumer::FAILURE
@@ -105,7 +105,7 @@ protected
   # you can directly save them to user model. By the way, you can access all them 
   # directly from rails params as well.
   def openid_params
-    return nil if @openid_response.nil?
+    return nil unless @openid_response
 
     simple_registration = OpenID::SReg::Response.from_success_response(@openid_response).data
     local_params = HashWithIndifferentAccess.new(simple_registration)
