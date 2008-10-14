@@ -97,9 +97,10 @@ http://openid.net/specs/openid-authentication-2_0.html
 
 == History and Credits
 
- * OpenID Authentication plugin started by David Heinemeier Hansson.[1]
- * Alex Gorbatchev made complete clean up without changing original API.[2]
- * Priit Tamboom made complete API change as well and gemified it.[3]
+ * Original openid_wrapper author.[1]
+ * OpenID Authentication plugin started by David Heinemeier Hansson.[2]
+ * Alex Gorbatchev made complete clean up without changing original API.[3]
+ * Priit Tamboom made complete API change as well and gemified it.[4]
 
 1. Priit Tamboom
 2. http://svn.rubyonrails.org/rails/plugins/open_id_authentication/
