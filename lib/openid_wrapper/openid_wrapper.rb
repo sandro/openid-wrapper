@@ -3,6 +3,12 @@ require 'openid/extensions/sreg'
 require 'openid/extensions/pape'
 require File.expand_path(File.dirname(__FILE__) + '/openid_ar_store')
 
+class String
+  def from_querystring_to_hash
+    self =~ /\w=\w/ ? ActionController::AbstractRequest.send(:parse_query_parameters, self) : self
+  end
+end
+
 module OpenidWrapper
   def self.included(base)
     base.send :helper_method, :openid_params
@@ -99,7 +105,7 @@ protected
       yield Result[:setup_needed], @openid_response.setup_url, nil
     end
   end
-  
+
   # For wrapper USERS:
   # openid_params is just a helper method to filter out openid parameters from params, so
   # you can directly save them to user model. By the way, you can access all them 
@@ -116,13 +122,17 @@ protected
     # authorization server or other identifier equality comparisons.
     local_params.merge!(:openid => @openid_response.display_identifier)
     local_params.merge!(:openid_identifier => @openid_response.identity_url)
-    
+
     # Add custom params to openid_params pool.
-    local_params.merge!(@openid_response.message.get_args(:bare_namespace))
-    
+    @openid_response.message.get_args(:bare_namespace).each do |k,v|
+      v = v.from_querystring_to_hash
+      local_params.merge!(k => v)
+      params.merge!(k => v)
+    end
+
     return local_params
-  end  
-  
+  end
+
 private
   def consumer
     OpenID::Consumer.new(session, ActiveRecordStore.new)
