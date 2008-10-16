@@ -92,7 +92,7 @@ protected
     # Add openid params to params[:openid]
     params[:openid] = openid_params
 
-    identity_url     = normalize_url(@openid_response.display_identifier) if @openid_response.display_identifier
+    identity_url     = OpenidWrapper.normalize_url(@openid_response.display_identifier) if @openid_response.display_identifier
 
     case @openid_response.status
     when OpenID::Consumer::SUCCESS
